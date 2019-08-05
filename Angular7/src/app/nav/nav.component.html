@@ -1,0 +1,15 @@
+<form [formGroup]="itemListForm" (submit)="SaveForm()">
+
+<label>Name</label>
+<input formControlName="name" id="name">
+<div *ngIf="itemListForm.get('name').errors.required">
+ Required
+</div> 
+
+<label>Price</label>
+<input formControlName="price" id="price">
+<!-- <div *ngIf="price.touched && name.hasError('required')">
+  Required
+ </div> -->
+ 
+</form>
