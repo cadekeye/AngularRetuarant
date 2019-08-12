@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OrderService } from '../shared/order.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -13,10 +13,13 @@ export class OrdersComponent implements OnInit {
 
   constructor(private service: OrderService,
     private router: Router,
-    private toastr: ToastrService) { }
+    private toastr: ToastrService,
+    private currentRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    this.refreshList();
+    this.orderList = this.currentRoute.snapshot.data.data;
+
+    // this.refreshList();
   }
 
   refreshList() {

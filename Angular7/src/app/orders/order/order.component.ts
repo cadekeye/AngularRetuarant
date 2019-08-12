@@ -16,7 +16,7 @@ import { CustomerComponent } from 'src/app/customer/customer.component';
 })
 export class OrderComponent implements OnInit {
   customerList: Customer[];
-  isValid: boolean = true;
+  isValid = true;
 
   constructor(private service: OrderService,
     private dialog: MatDialog,
@@ -26,7 +26,15 @@ export class OrderComponent implements OnInit {
     private currentRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    const orderID = this.currentRoute.snapshot.paramMap.get('id');
+    const orderID = this.currentRoute.snapshot.paramMap.get('id')
+
+    if (orderID == null) {
+      this.resetForm();
+    } else {
+      this.service.formData = this.currentRoute.snapshot.data.data.order;
+      this.service.orderItems = this.currentRoute.snapshot.data.data.orderDetails;
+    }
+   /*  const orderID = this.currentRoute.snapshot.paramMap.get('id');
 
     if (orderID == null) {
       this.resetForm();
@@ -35,7 +43,7 @@ export class OrderComponent implements OnInit {
         this.service.formData = res.order;
         this.service.orderItems = res.orderDetails;
       });
-    }
+    } */
 
     this.reloadCustomerList();
   }
@@ -102,7 +110,7 @@ export class OrderComponent implements OnInit {
         this.resetForm();
         this.toastr.success('Submitted Successfully', 'Restaurent App.');
         this.router.navigate(['/orders']);
-      })
+      });
     }
   }
 

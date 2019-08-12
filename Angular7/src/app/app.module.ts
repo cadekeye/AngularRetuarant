@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,6 +17,7 @@ import { OrderService } from './shared/order.service';
 import { CustomerComponent } from './customer/customer.component';
 import { ItemComponent } from './item/item.component';
 import { NavComponent } from './nav/nav.component';
+import { TestComponent } from './test/test.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { NavComponent } from './nav/nav.component';
     OrderItemsComponent,
     CustomerComponent,
     ItemComponent,
-    NavComponent
+    NavComponent,
+    TestComponent
   ],
   imports: [
     BrowserModule,
@@ -41,6 +43,7 @@ import { NavComponent } from './nav/nav.component';
   ],
   entryComponents:[OrderItemsComponent, CustomerComponent, ItemComponent],
   providers: [OrderService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class AppModule { }
