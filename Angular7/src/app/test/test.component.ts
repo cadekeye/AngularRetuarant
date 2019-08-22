@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup, AbstractControl, ValidatorFn, FormArray, FormControl } from '@angular/forms';
+import { CustomValidator } from '../shared/control.message';
+import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 
 @Component({
   selector: 'app-test',
@@ -23,7 +25,13 @@ export class TestComponent implements OnInit {
     },
     'email': {
       'email': 'not a valid email',
-      'emailDomain': 'email not valid domain'
+      'emailDomain': 'email not valid domain',
+    },
+    'confirmEmail': {
+     'required': 'required',
+    },
+    'emailGroup': {
+      'emailMismatch': 'email and confirm email do not match'
     },
     'age': {
       'required': 'Age is required.'
@@ -34,6 +42,8 @@ export class TestComponent implements OnInit {
     'firstName': '',
     'lastName': '',
     'email': '',
+    'confirmEmail': '',
+    'emailGroup': '',
     'age': ''
   };
 
@@ -41,8 +51,11 @@ export class TestComponent implements OnInit {
     this.userForm = this.formBuilder.group({
       firstName: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(10)]],
       lastName: ['', Validators.required],
-      email: ['', [Validators.email, emailDomain('tech.com')]],
-      age: ['', Validators.required]
+      emailGroup: this.formBuilder.group({
+        email: ['', [Validators.email, CustomValidator.emailDomain('tech.com')]],
+        confirmEmail: ['', Validators.required],
+        }, {validator: CustomValidator.matchEmail}),
+      age: ['', Validators.required],
     });
 
     this.userForm.valueChanges.subscribe(data => {
@@ -63,32 +76,46 @@ export class TestComponent implements OnInit {
      Object.keys(fg.controls).forEach(key => {
        const abstractControl = fg.get(key);
 
-       if (abstractControl instanceof FormGroup) {
-        this.logValidationErrors(abstractControl);
-       } else {
-          this.formErrors[key] = '';
-         if (abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)) {
-          const messages = this.validationMessages[key];
+       this.formErrors[key] = '';
+       if (abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)) {
+        const messages = this.validationMessages[key];
 
-           for (const errorKey in abstractControl.errors) {
-             if (errorKey) {
-               this.formErrors[key] += messages[errorKey] + ' ';
-             }
+         for (const errorKey in abstractControl.errors) {
+           if (errorKey) {
+             this.formErrors[key] += messages[errorKey] + ' ';
            }
          }
+
+       if (abstractControl instanceof FormGroup) {
+        this.logValidationErrors(abstractControl);
+       }
        }
      });
   }
-}
 
-function emailDomain(domainName: string) {
-  return (control: AbstractControl): {[key: string]: any} | null => {
-  const email = control.value;
-  const domain = email.substring(email.lastIndexOf('@') + 1);
+  loadData (): void {
+    const formArray = new FormArray([
+      new FormControl('john', [Validators.required]),
+      new FormGroup({
+        country: new FormControl('', Validators.required)
+      }),
+      new FormArray([
+        new FormControl('test', Validators.required)
+      ])
+    ]);
 
-  if (email === '' || domain.toLowerCase() === domainName.toLowerCase()) {
-    return null;
+    const formArray2 = this.formBuilder.array([
+     new FormControl('John', Validators.required),
+     new FormControl('IT', Validators.required),
+     new FormControl('', Validators.required)
+    ]);
+
+    console.log(formArray2.at(0).valid);
+    console.log(formArray2.valid);
+    const n = formArray2.length;
+
+    for (let i = 0; i < n; i++) {
+      console.log(formArray2.at(i).value);
+    }
   }
-  return {'emailDomain': true};
-};
 }

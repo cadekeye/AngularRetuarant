@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, AbstractControl } from '@angular/forms';
 
 
 @Component({
@@ -31,3 +31,30 @@ export class ControlMessage {
     return null;
  }
 }
+
+export class CustomValidator {
+    static emailDomain(domainName: string) {
+        return (control: AbstractControl): {[key: string]: any} | null => {
+        const email = control.value;
+        const domain = email.substring(email.lastIndexOf('@') + 1);
+
+        if (email === '' || domain.toLowerCase() === domainName.toLowerCase()) {
+          return null;
+        }
+        return {'emailDomain': true};
+      };
+    }
+
+    static matchEmail(group: AbstractControl): {[key: string]: any} | null {
+        const emailControl = group.get('email');
+        const confirmEmailControl = group.get('confirmEmail');
+
+        if (emailControl.value === confirmEmailControl.value || confirmEmailControl.pristine) {
+          return null;
+        } else {
+          return {'emailMismatch': true};
+        }
+    }
+}
+
+
